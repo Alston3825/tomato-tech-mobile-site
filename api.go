@@ -390,18 +390,46 @@ func (s *server) review(w http.ResponseWriter, r *http.Request, u *user) {
 		return
 	}
 	id := r.PathValue("id")
-	var uid, tid int64
+	// 状态和通知一起提交；条件更新避免同一申请被重复审核。
+	tx, err := s.db.BeginTx(r.Context(), nil)
+	if err != nil {
+		fail(w, 500, "审核失败")
+		return
+	}
+	defer tx.Rollback()
+	var uid int64
 	var old, th string
-	if s.db.QueryRow(`SELECT v.user_id,a.theater_id,a.status,t.name FROM applications a JOIN video_accounts v ON v.id=a.video_account_id JOIN theaters t ON t.id=a.theater_id WHERE a.id=?`, id).Scan(&uid, &tid, &old, &th) != nil {
+	err = tx.QueryRowContext(r.Context(), `SELECT v.user_id,a.status,t.name FROM applications a JOIN video_accounts v ON v.id=a.video_account_id JOIN theaters t ON t.id=a.theater_id WHERE a.id=?`, id).Scan(&uid, &old, &th)
+	if err == sql.ErrNoRows {
 		fail(w, 404, "申请不存在")
+		return
+	}
+	if err != nil {
+		fail(w, 500, "审核失败")
 		return
 	}
 	if old != "待审核" {
 		fail(w, 400, "该申请已处理")
 		return
 	}
-	s.db.Exec(`UPDATE applications SET status=?,reviewed_at=? WHERE id=?`, in.Status, now(), id)
-	s.db.Exec(`INSERT INTO notifications(user_id,title,body,created_at) VALUES(?,?,?,?)`, uid, "报白申请"+in.Status, "剧场：“"+th+"”", now())
+	res, err := tx.ExecContext(r.Context(), `UPDATE applications SET status=?,reviewed_at=? WHERE id=? AND status='待审核'`, in.Status, now(), id)
+	if err != nil {
+		fail(w, 500, "审核失败")
+		return
+	}
+	changed, err := res.RowsAffected()
+	if err != nil || changed != 1 {
+		fail(w, 500, "审核失败")
+		return
+	}
+	if _, err := tx.ExecContext(r.Context(), `INSERT INTO notifications(user_id,title,body,created_at) VALUES(?,?,?,?)`, uid, "报白申请"+in.Status, "剧场：“"+th+"”", now()); err != nil {
+		fail(w, 500, "审核失败")
+		return
+	}
+	if err := tx.Commit(); err != nil {
+		fail(w, 500, "审核失败")
+		return
+	}
 	writeJSON(w, 200, map[string]bool{"ok": true})
 }
 
