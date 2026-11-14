@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>番茄科技 · 管理后台</title>
+<link rel="stylesheet" href="style.css">
+<style>
+#app{max-width:760px;overflow:auto;padding:0 14px 30px}
+.tabs{display:flex;gap:6px;overflow:auto;padding:12px 0;position:sticky;top:0;background:var(--bg);z-index:5}
+.tabs button{flex:none;height:36px;padding:0 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-weight:600}
+.tabs button.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.thumb{width:44px;height:58px;border-radius:8px;flex:none;background-size:cover;background-position:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rk .ops{display:flex;gap:6px;flex:none}
+pre.err{white-space:pre-wrap;color:var(--primary);font-size:12px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="layer"></div>
+<script src="data.js"></script>
+<script src="admin.js?v=2"></script>
+</body>
+</html>
