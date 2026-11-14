@@ -3,3 +3,27 @@
 *.db-wal
 tomato-site
 uploads/
+
+# Codex迁移副本：本机运行文件与秘密配置不提交
+.env*
+!.env*.example
+!.env*.template
+*.pem
+*.key
+*.db
+*.db-wal
+*.db-shm
+*.sqlite3
+node_modules/
+.venv/
+__pycache__/
+**/build/
+.gradle/
+dist/
+tmp/
+host/models/
+host/data/
+host/config/
+host/mosquitto/auth/
+发出文件/
+.DS_Store
