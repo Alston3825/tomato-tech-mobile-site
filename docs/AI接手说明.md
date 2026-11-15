@@ -4,7 +4,7 @@
 
 ## 权威目录与仓库
 
-本机原始开发目录：`/Users/alston/Documents/Codex/接手项目/番茄科技网站移动端`。本次已完整复制到Codex目录；原目录保留作为历史副本。现有服务器地址不变。
+本机原始开发目录：`/Users/alston/Projects/Codex/接手项目/番茄科技网站移动端`。本次已完整复制到Codex目录；原目录保留作为历史副本。现有服务器地址不变。
 
 独立私有仓库：https://github.com/Alston3825/tomato-tech-mobile-site ，自动备份分支 `main`。恢复时 clone 后显式切换该分支。已有生产仓库的 main 保持原发布流程，自动备份不会替你部署。
 
